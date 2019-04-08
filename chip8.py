@@ -49,7 +49,7 @@ class Chip8(object):
             Clear the display.
             """
             pass # TODO
-        if ( n3 == 0x0 ) and (nnn != 0x0EE):
+        elif ( n3 == 0x0 ) and (nnn != 0x0EE):
             """
             0nnn - SYS addr
             Jump to a machine code routine at nnn.
@@ -57,6 +57,16 @@ class Chip8(object):
             This instruction is only used on the old computers on which Chip-8 was originally implemented. It is ignored by modern interpreters.
             """
             pass    
+        elif ( n3 == 0x0 ) and (nnn == 0x0EE):
+            """
+            00EE - RET
+            Return from a subroutine.
+
+            The interpreter sets the program counter to the address at the top of the stack, then subtracts 1 from the stack pointer.
+            """
+            self.PC = self.STACK[self.SP]
+            self.SP -= 1
+            return
         elif ( n3 == 0x1 ):
             """
             1nnn - JP addr
