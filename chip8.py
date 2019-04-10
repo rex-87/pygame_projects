@@ -6,6 +6,9 @@ class Chip8(object):
 
     def __init__(self, RomPath = None):
         
+        self.display_width_pixel = 64
+        self.display_height_pixel = 32        
+        
         with open(RomPath, 'rb') as f:
             RomStr = f.read()
         self.mem = bytes(0x200*[0x00]) + RomStr        
@@ -18,37 +21,50 @@ class Chip8(object):
         for i in range(16):
             self.KEYS[i] = False           
             
-        self.STACK = 16*[0x0000]    
+        self.STACK = 16*[0x0000]
+        
+        self.DISPLAY = self.display_height_pixel*[0x0000000000000000]
             
         self.I = 0x00    
 
         self.SP = 0x0
+        
         self.PC = 0x200
+        
+        self.DT = 0x00
+        
+        self.last_DT_tick = 0
     
     def emulateCycle(self):
+        
         w = (self.mem[self.PC] << 8) + self.mem[self.PC+1]
+        
         print("${:04X} {:04X}".format(self.PC, w))
         print(
             "V "+
             " ".join(["{:02X}".format(val) for key, val in self.V.items()])+
-            "  I {:04X}".format(self.I)
+            "  I {:04X}".format(self.I)+
+            "  DT {:02X}".format(self.DT)
         )
         print(        
             "S "+
-            " ".join(["{:04X}".format(add) for add in self.STACK])
+            " ".join(["{:04X}".format(add) for add in self.STACK])+
+            "  SP {:02X}".format(self.SP)
         )
+        
         n3 = (w & 0xF000) >> 12
         x = (w & 0x0F00) >> 8
         y = (w & 0x00F0) >> 4
         n = w & 0x000F
         kk = w & 0x00FF
         nnn = w & 0x0FFF
-        if ( n3 == 0x0 ) and (nnn == 0x0E0):
+        
+        if ( n3 == 0x0 ) and ( nnn == 0x0E0 ):
             """
             00E0 - CLS
             Clear the display.
             """
-            pass # TODO
+            self.DISPLAY = self.display_height_pixel*[0x0000000000000000]
         elif ( n3 == 0x0 ) and (nnn != 0x0EE):
             """
             0nnn - SYS addr
@@ -66,7 +82,6 @@ class Chip8(object):
             """
             self.PC = self.STACK[self.SP]
             self.SP -= 1
-            return
         elif ( n3 == 0x1 ):
             """
             1nnn - JP addr
@@ -139,7 +154,29 @@ class Chip8(object):
             If the sprite is positioned so part of it is outside the coordinates of the display, it wraps around to the opposite side of the screen.
             See instruction 8xy3 for more information on XOR, and section 2.4, Display, for more information on the Chip-8 screen and sprites.
             """
-            pass # TODO
+            Vx = self.V[x]
+            Vy = self.V[y]
+            sprite_byte_list = self.mem[self.I:self.I+n]
+            self.V[0xF] = 0
+            for sprite_byte_index, sprite_byte in enumerate(sprite_byte_list):
+                # TODO: handle case where sprite is positioned so part of it is outside the coordinates of the display
+                old_display_byte = (self.DISPLAY[Vy+sprite_byte_index] >> (self.display_width_pixel - 8 - Vx) ) & 0xFF
+                self.DISPLAY[Vy+sprite_byte_index] ^= ( sprite_byte << (self.display_width_pixel - 8 - Vx) )
+                new_display_byte = (self.DISPLAY[Vy+sprite_byte_index] >> (self.display_width_pixel - 8 - Vx) ) & 0xFF
+                if self.V[0xF] == 0:
+                    for bit_position in range(8):
+                        if (
+                                ( ( (old_display_byte >> bit_position) & 0x1 ) == 1 )
+                            and ( ( (new_display_byte >> bit_position) & 0x1 ) == 0 )
+                        ):
+                            self.V[0xF] = 1
+                            break
+            
+            # Debug DISPLAY
+            # for row in self.DISPLAY:
+                # print("{:064b}".format(row))
+            # time.sleep(0.04)
+            
         elif ( n3 == 0xE ) and ( kk == 0xA1 ):
             """
             ExA1 - SKNP Vx
@@ -149,6 +186,23 @@ class Chip8(object):
             """
             if not self.KEYS[x]:
                 self.PC += 2
+        elif ( n3 == 0xF ) and (kk == 0x07):
+            """
+            Fx07 - LD Vx, DT
+            Set Vx = delay timer value.
+
+            The value of DT is placed into Vx.
+            """
+            self.V[x] = self.DT
+        elif ( n3 == 0xF ) and (kk == 0x15):
+            """
+            Fx15 - LD DT, Vx
+            Set delay timer = Vx.
+
+            DT is set equal to the value of Vx.
+            """
+            self.DT = self.V[x]
+            self.last_DT_tick = time.time()
         elif ( n3 == 0xF ) and (kk == 0x1E):
             """
             Fx1E - ADD I, Vx
@@ -168,16 +222,25 @@ class Chip8(object):
                 self.V[loc] = self.mem[self.I + loc]
         else:
             import pdb; pdb.set_trace() 
-            # pass
         self.PC += 2
-        # input("DBG")
 
-display_width_pixel = 64
-display_height_pixel = 32
-zoom = 10
+    def decrement_DT(self):
+    
+        if self.DT > 0:
+            time_now = time.time()
+            if ( time_now - self.last_DT_tick ) > ( 1/60 ):
+                self.DT -= 1
+                self.last_DT_tick = time_now
+        
+ThisFolder = os.path.dirname(os.path.realpath(__file__))
+RomPath = os.path.join(ThisFolder, r"roms\INVADERS")
 
-screen_width = display_width_pixel*zoom
-screen_height = display_height_pixel*zoom
+chip8 = Chip8(RomPath = RomPath)
+
+zoom = 12
+
+screen_width = chip8.display_width_pixel*zoom
+screen_height = chip8.display_height_pixel*zoom
 
 BLACK_COLOUR = (0, 0, 0)
 WHITE_COLOUR = (255, 255, 255)
@@ -185,31 +248,18 @@ WHITE_COLOUR = (255, 255, 255)
 pygame.init()
 screen = pygame.display.set_mode((screen_width, screen_height))
 background = pygame.Surface(screen.get_size())
-background.fill(BLACK_COLOUR)
 background = background.convert()
-screen.blit(background, (0,0))
 clock = pygame.time.Clock()
-surface = pygame.Surface((10, 10))
-surface.set_colorkey((0, 0, 0))
-pygame.draw.rect(
-    surface,
-    WHITE_COLOUR,
-    (0, 0, 10, 10),
-)
 FPS = 60
 bPlaying = True
 
-ThisFolder = os.path.dirname(os.path.realpath(__file__))
-RomPath = os.path.join(ThisFolder, r"roms\INVADERS")
-
 keymap = {}
 
-chip8 = Chip8(RomPath = RomPath)
-
 while bPlaying:
+    
     milliseconds = clock.tick(FPS)  # milliseconds passed since last frame
     seconds = milliseconds / 1000.0 # seconds passed since last frame (float)
-    screen.blit(background, (0,0))     #draw background on screen (overwriting all)
+    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             bPlaying = False # pygame window closed by user
@@ -251,8 +301,20 @@ while bPlaying:
             elif event.unicode == "x": chip8.KEYS[0x0] = False
             elif event.unicode == "c": chip8.KEYS[0xB] = False
             elif event.unicode == "v": chip8.KEYS[0xF] = False
-    for i in range(10):
+   
+    for i in range(5):
         chip8.emulateCycle()
-    screen.blit(surface, (0, 0))
-    pygame.display.flip()        
+        chip8.decrement_DT()
     
+    background.fill(BLACK_COLOUR)
+    for pixel_row_index, pixel_row in enumerate(chip8.DISPLAY):
+        py = pixel_row_index
+        for px in range(chip8.display_width_pixel): 
+            if ( ( pixel_row >> (chip8.display_width_pixel - px - 1) ) & 0x1 ) == 1:
+                pygame.draw.rect(
+                    background,
+                    WHITE_COLOUR,
+                    (zoom*px, zoom*py, zoom, zoom),
+                )
+    screen.blit(background, (0, 0))
+    pygame.display.flip()        
