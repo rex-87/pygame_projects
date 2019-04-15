@@ -1,6 +1,11 @@
 import os
 import pygame
 import time
+import threading
+import queue
+
+pygame.mixer.init(buffer = 256)
+beep = pygame.mixer.Sound(file = r'sounds\200.wav')
 
 class Chip8(object):
 
@@ -33,24 +38,73 @@ class Chip8(object):
         
         self.DT = 0x00
         
-        self.last_DT_tick = 0
+        self.ST = 0x00
+        self.bBeepPlaying = False
+        
+        self.EmulationThread = threading.Thread(target = self.runEmulationThread)
+        self.bEmulationThreadAbortQueue = queue.Queue()
+        
+        self.DtStThread = threading.Thread(target = self.runDtStThread)
+        self.bDtStThreadAbortQueue = queue.Queue()
     
+    def runEmulationThread(self):
+    
+        ClockFrequency = 110000
+        TimeElapsed = 0
+        startTime = 0
+        while True:
+            
+            try:
+                bEmulationThreadAbort = self.bEmulationThreadAbortQueue.get(block = False)
+                if bEmulationThreadAbort:
+                    break
+            except queue.Empty:
+                pass         
+            
+            TimeElapsed = time.perf_counter() - startTime
+            if TimeElapsed > ( 1/ClockFrequency ):
+                startTime = time.perf_counter()
+                self.emulateCycle()
+            else:
+                time.sleep(1/ClockFrequency - TimeElapsed)    
+                
+    def runDtStThread(self):
+    
+        ClockFrequency = 60
+        TimeElapsed = 0
+        startTime = time.perf_counter()
+        while True:
+            
+            try:
+                bAbort = self.bDtStThreadAbortQueue.get(block = False)
+                if bAbort:
+                    break
+            except queue.Empty:
+                pass         
+            
+            TimeElapsed = time.perf_counter() - startTime
+            if TimeElapsed > ( 1/ClockFrequency ):
+                startTime = time.perf_counter()
+                self.decrement_DT_ST()
+            else:
+                time.sleep(1/ClockFrequency - TimeElapsed)
+
     def emulateCycle(self):
         
         w = (self.mem[self.PC] << 8) + self.mem[self.PC+1]
         
-        print("${:04X} {:04X}".format(self.PC, w))
-        print(
-            "V "+
-            " ".join(["{:02X}".format(val) for key, val in self.V.items()])+
-            "  I {:04X}".format(self.I)+
-            "  DT {:02X}".format(self.DT)
-        )
-        print(        
-            "S "+
-            " ".join(["{:04X}".format(add) for add in self.STACK])+
-            "  SP {:02X}".format(self.SP)
-        )
+        # print("${:04X} {:04X}".format(self.PC, w))
+        # print(
+            # "V "+
+            # " ".join(["{:02X}".format(val) for key, val in self.V.items()])+
+            # "  I {:04X}".format(self.I)+
+            # "  DT {:02X}".format(self.DT)
+        # )
+        # print(        
+            # "S "+
+            # " ".join(["{:04X}".format(add) for add in self.STACK])+
+            # "  SP {:02X}".format(self.SP)
+        # )
         
         n3 = (w & 0xF000) >> 12
         x = (w & 0x0F00) >> 8
@@ -111,6 +165,15 @@ class Chip8(object):
             """
             if self.V[x] == kk:
                 self.PC += 2       
+        elif ( n3 == 0x4 ):
+            """
+            4xkk - SNE Vx, byte
+            Skip next instruction if Vx != kk.
+
+            The interpreter compares register Vx to kk, and if they are not equal, increments the program counter by 2.
+            """
+            if self.V[x] != kk:
+                self.PC += 2       
         elif ( n3 == 0x6 ):
             """
             6xkk - LD Vx, byte
@@ -126,7 +189,7 @@ class Chip8(object):
 
             Adds the value kk to the value of register Vx, then stores the result in Vx. 
             """
-            self.V[x] += kk
+            self.V[x] = (self.V[x] + kk) & 0xFF
         elif ( n3 == 0x8 ) and ( n == 0x0 ):
             """
             8xy0 - LD Vx, Vy
@@ -135,6 +198,60 @@ class Chip8(object):
             Stores the value of register Vy in register Vx.
             """
             self.V[x] = self.V[y]
+        elif ( n3 == 0x8 ) and ( n == 0x2 ):
+            """
+            8xy2 - AND Vx, Vy
+            Set Vx = Vx AND Vy.
+
+            Performs a bitwise AND on the values of Vx and Vy, then stores the result in Vx. A bitwise AND compares the corrseponding bits from two values, and if both bits are 1, then the same bit in the result is also 1. Otherwise, it is 0.
+            """
+            self.V[x] &= self.V[y]
+        elif ( n3 == 0x8 ) and ( n == 0x3 ):
+            """
+            8xy3 - XOR Vx, Vy
+            Set Vx = Vx XOR Vy.
+
+            Performs a bitwise exclusive OR on the values of Vx and Vy, then stores the result in Vx. An exclusive OR compares the corrseponding bits from two values, and if the bits are not both the same, then the corresponding bit in the result is set to 1. Otherwise, it is 0.
+            """
+            self.V[x] ^= self.V[y]
+        elif ( n3 == 0x8 ) and ( n == 0x4 ):
+            """
+            8xy4 - ADD Vx, Vy
+            Set Vx = Vx + Vy, set VF = carry.
+
+            The values of Vx and Vy are added together. If the result is greater than 8 bits (i.e., > 255,) VF is set to 1, otherwise 0. Only the lowest 8 bits of the result are kept, and stored in Vx.
+            """
+            sum = self.V[x] + self.V[y]
+            if sum > 0xFF:
+                self.V[0xF] = 1
+            else:
+                self.V[0xF] = 0                
+            self.V[x] = sum & 0xFF
+        elif ( n3 == 0x8 ) and ( n == 0x5 ):
+            """
+            8xy5 - SUB Vx, Vy
+            Set Vx = Vx - Vy, set VF = NOT borrow.
+
+            If Vx > Vy, then VF is set to 1, otherwise 0. Then Vy is subtracted from Vx, and the results stored in Vx.
+            """
+            if self.V[x] > self.V[y]:
+                self.V[0xF] = 1
+            else:
+                self.V[0xF] = 0               
+            self.V[x] = (self.V[x] - self.V[y]) & 0xFF
+        elif ( n3 == 0x8 ) and ( n == 0x6 ):
+            """
+            8xy6 - SHR Vx {, Vy}
+            Set Vx = Vx SHR 1.
+
+            If the least-significant bit of Vx is 1, then VF is set to 1, otherwise 0. Then Vx is divided by 2.
+            """
+            if self.V[x] & 0x1 == 1:
+                self.V[0xF] = 1
+            else:
+                self.V[0xF] = 0
+               
+            self.V[x] >>= 1
         elif ( n3 == 0xA ):
             """
             Annn - LD I, addr
@@ -177,6 +294,15 @@ class Chip8(object):
                 # print("{:064b}".format(row))
             # time.sleep(0.04)
             
+        elif ( n3 == 0xE ) and ( kk == 0x9E ):
+            """
+            Ex9E - SKP Vx
+            Skip next instruction if key with the value of Vx is pressed.
+
+            Checks the keyboard, and if the key corresponding to the value of Vx is currently in the down position, PC is increased by 2.
+            """
+            if self.KEYS[self.V[x]]:
+                self.PC += 2
         elif ( n3 == 0xE ) and ( kk == 0xA1 ):
             """
             ExA1 - SKNP Vx
@@ -184,9 +310,9 @@ class Chip8(object):
 
             Checks the keyboard, and if the key corresponding to the value of Vx is currently in the up position, PC is increased by 2.
             """
-            if not self.KEYS[x]:
+            if not self.KEYS[self.V[x]]:
                 self.PC += 2
-        elif ( n3 == 0xF ) and (kk == 0x07):
+        elif ( n3 == 0xF ) and ( kk == 0x07 ):
             """
             Fx07 - LD Vx, DT
             Set Vx = delay timer value.
@@ -194,7 +320,20 @@ class Chip8(object):
             The value of DT is placed into Vx.
             """
             self.V[x] = self.DT
-        elif ( n3 == 0xF ) and (kk == 0x15):
+        elif ( n3 == 0xF ) and ( kk == 0x0A ):
+            """
+            Fx0A - LD Vx, K
+            Wait for a key press, store the value of the key in Vx.
+
+            All execution stops until a key is pressed, then the value of that key is stored in Vx.
+            """
+            for k_ in self.KEYS:
+                if self.KEYS[k_]:
+                    break
+            else:
+                return
+            self.V[x] = k_
+        elif ( n3 == 0xF ) and ( kk == 0x15 ):
             """
             Fx15 - LD DT, Vx
             Set delay timer = Vx.
@@ -202,8 +341,15 @@ class Chip8(object):
             DT is set equal to the value of Vx.
             """
             self.DT = self.V[x]
-            self.last_DT_tick = time.time()
-        elif ( n3 == 0xF ) and (kk == 0x1E):
+        elif ( n3 == 0xF ) and ( kk == 0x18 ):
+            """
+            Fx18 - LD ST, Vx
+            Set sound timer = Vx.
+
+            ST is set equal to the value of Vx.
+            """
+            self.ST = self.V[x]
+        elif ( n3 == 0xF ) and ( kk == 0x1E ):
             """
             Fx1E - ADD I, Vx
             Set I = I + Vx.
@@ -211,7 +357,7 @@ class Chip8(object):
             The values of I and Vx are added, and the results are stored in I.
             """
             self.I += self.V[x]
-        elif ( n3 == 0xF ) and (kk == 0x65):
+        elif ( n3 == 0xF ) and ( kk == 0x65 ):
             """
             Fx65 - LD Vx, [I]
             Read registers V0 through Vx from memory starting at location I.
@@ -224,13 +370,39 @@ class Chip8(object):
             import pdb; pdb.set_trace() 
         self.PC += 2
 
-    def decrement_DT(self):
+    def decrement_DT_ST(self):
     
         if self.DT > 0:
-            time_now = time.time()
-            if ( time_now - self.last_DT_tick ) > ( 1/60 ):
-                self.DT -= 1
-                self.last_DT_tick = time_now
+            self.DT -= 1
+        else:
+            self.DT = 0x00
+            
+        if self.ST > 0:
+            if not self.bBeepPlaying:
+                beep.play(loops = -1)
+                self.bBeepPlaying = True
+            self.ST -= 1
+        else:
+            if self.bBeepPlaying:
+                beep.stop()
+                self.bBeepPlaying = False
+            self.ST = 0x00
+    
+    def startAllThreads(self):
+        self.EmulationThread.start()
+        self.DtStThread.start()
+    
+    def abortAllThreads(self):
+        self.bEmulationThreadAbortQueue.put(True)
+        self.bDtStThreadAbortQueue.put(True)
+    
+    def joinAllThreads(self):
+        self.EmulationThread.join()
+        self.DtStThread.join()
+    
+    def stopAllThreads(self):
+        self.abortAllThreads()
+        self.joinAllThreads()
         
 ThisFolder = os.path.dirname(os.path.realpath(__file__))
 RomPath = os.path.join(ThisFolder, r"roms\INVADERS")
@@ -255,6 +427,11 @@ bPlaying = True
 
 keymap = {}
 
+MaxTime = 0
+AverageTime = 0
+CycleCount = 0
+
+chip8.startAllThreads()
 while bPlaying:
     
     milliseconds = clock.tick(FPS)  # milliseconds passed since last frame
@@ -263,6 +440,7 @@ while bPlaying:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             bPlaying = False # pygame window closed by user
+            chip8.stopAllThreads()
         elif event.type == pygame.KEYDOWN:          
             # print(event.unicode+" DOWN")
             keymap[event.scancode] = event.unicode
@@ -300,12 +478,8 @@ while bPlaying:
             elif event.unicode == "w": chip8.KEYS[0xA] = False
             elif event.unicode == "x": chip8.KEYS[0x0] = False
             elif event.unicode == "c": chip8.KEYS[0xB] = False
-            elif event.unicode == "v": chip8.KEYS[0xF] = False
-   
-    for i in range(5):
-        chip8.emulateCycle()
-        chip8.decrement_DT()
-    
+            elif event.unicode == "v": chip8.KEYS[0xF] = False  
+            
     background.fill(BLACK_COLOUR)
     for pixel_row_index, pixel_row in enumerate(chip8.DISPLAY):
         py = pixel_row_index
