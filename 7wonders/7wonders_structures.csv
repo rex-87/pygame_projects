@@ -1,14 +1,25 @@
-name,type,colour,cost,value,3p,4p,5p,6p,7p
-Lumber Yard,Raw Material,Brown,,W,1,1,,,
-Stone Pit,Raw Material,Brown,,S,1,,1,,
-Clay Pool,Raw Material,Brown,,C,1,,1,,
-Ore Vein,Raw Material,Brown,,O,1,1,,,
-Tree Farm,Raw Material,Brown,,,,,,1,
-Excavation,Raw Material,Brown,,,,1,,,
-Clay Pit,Raw Material,Brown,,,1,,,,
-Timber Yard,Raw Material,Brown,,,1,,,,
-Forest Cave,Raw Material,Brown,,,,,1,,
-Mine,Raw Material,Brown,,,,,,1,
-Loom,Manufactured Good,Grey,,T,,,,,
-Glassworks,Manufactured Good,Grey,,G,,,,,
-Press,Manufactured Good,Grey,,P,,,,,
+name,type,colour,cost,value,age,3p,4p,5p,6p,7p
+Lumber Yard,Raw Material,Brown,,Wo1,I,1,1,,,
+Stone Pit,Raw Material,Brown,,St1,I,1,,1,,
+Clay Pool,Raw Material,Brown,,Cl1,I,1,,1,,
+Ore Vein,Raw Material,Brown,,Or1,I,1,1,,,
+Tree Farm,Raw Material,Brown,Mo1,Wo1/Cl1,I,,,,1,
+Excavation,Raw Material,Brown,Mo1,St1/Cl1,I,,1,,,
+Clay Pit,Raw Material,Brown,Mo1,Cl1/Or1,I,1,,,,
+Timber Yard,Raw Material,Brown,Mo1,St1/Wo1,I,1,,,,
+Forest Cave,Raw Material,Brown,Mo1,Wo1/Or1,I,,,1,,
+Mine,Raw Material,Brown,Mo1,Or1/St1,I,,,,1,
+Loom,Manufactured Good,Grey,,Lo1,I,1,,,1,
+Glassworks,Manufactured Good,Grey,,Gl1,I,1,,,1,
+Press,Manufactured Good,Grey,,Pa1,I,1,,,1,
+Pawnshop,Civilian,Blue,,Vp3,I,,1,,,1
+Baths,Civilian,Blue,St1,Vp3,I,1,,,,1
+Altar,Civilian,Blue,,Vp2,I,1,,1,,
+Theater,Civilian,Blue,,Vp2,I,1,,,1,
+Tavern,Commerce,Yellow,,Mo5,I,,1,1,,1
+East Trading Post,Commerce,Yellow,,Etp,I,1,,,,1
+West Trading Post,Commerce,Yellow,,Wtp,I,1,,,,1
+Marketplace,Commerce,Yellow,,Mrk,I,1,,,1,
+Stockade,Military,Red,Wo1,Sh1,I,1,,,,1
+Barracks,Military,Red,Or1,Sh1,I,1,,1,,
+Guard Tower,Military,Red,Cl1,Sh1,I,1,1,,,
