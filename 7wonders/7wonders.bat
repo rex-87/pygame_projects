@@ -1,0 +1,1 @@
+%~dp0\..\Python37\Scripts\activate && python %~dp0\7wonders.py
