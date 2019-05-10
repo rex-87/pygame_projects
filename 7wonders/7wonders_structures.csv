@@ -15,7 +15,7 @@ Press,Manufactured Good,Grey,,Pa1,I,1,,,1,
 Pawnshop,Civilian,Blue,,Vp3,I,,1,,,1
 Baths,Civilian,Blue,St1,Vp3,I,1,,,,1
 Altar,Civilian,Blue,,Vp2,I,1,,1,,
-Theater,Civilian,Blue,,Vp2,I,1,,,1,
+Theater,,Blue,,Vp2,I,1,,,1,
 Tavern,Commerce,Yellow,,Mo5,I,,1,1,,1
 East Trading Post,Commerce,Yellow,,Etp,I,1,,,,1
 West Trading Post,Commerce,Yellow,,Wtp,I,1,,,,1
@@ -23,3 +23,57 @@ Marketplace,Commerce,Yellow,,Mrk,I,1,,,1,
 Stockade,Military,Red,Wo1,Sh1,I,1,,,,1
 Barracks,Military,Red,Or1,Sh1,I,1,,1,,
 Guard Tower,Military,Red,Cl1,Sh1,I,1,1,,,
+Apothecary,Science,Green,Lo1,Sa1,I,1,,1,,
+Workshop,Science,Green,Gl1,Sb1,I,1,,,,1
+Scriptorium,Science,Green,Pa1,Sc1,I,1,1,,,
+Sawmill,Raw Material,Brown,Mo1,Wo2,II,1,1,,,
+Quarry,Raw Material,Brown,Mo1,St2,II,1,1,,,
+Brickyard,Raw Material,Brown,Mo1,Cl2,II,1,1,,,
+Foundry,Raw Material,Brown,Mo1,Or2,II,1,1,,,
+Loom,Manufactured Good,Grey,,Lo1,II,1,,1,,
+Glassworks,Manufactured Good,Grey,,Gl1,II,1,,1,,
+Press,Manufactured Good,Grey,,Pa1,II,1,,1,,
+Aqueduct,Civilian,Blue,St3,Vp5,II,1,,,,1
+Temple,Civilian,Blue,Wo1Cl1Gl1,Vp3,II,1,,,1,
+Statue,Civilian,Blue,Or2Wo1,Vp4,II,1,,,,1
+Courthouse,Civilian,Blue,Cl2Lo1,Vp4,II,1,,1,,
+Forum,Commerce,Yellow,Cl2,Lo1/Gl1/Pa1,II,1,,,1,1
+Caravansery,Commerce,Yellow,Wo2,Cl1/St1/Or1/Wo1,II,1,,1,1,
+Vineyard,Commerce,Yellow,,VIN,II,1,,,1,
+Bazar,Commerce,Yellow,,BAZ,II,,1,,,1
+Walls,Military,Red,St3,Sh2,II,1,,,,1
+Training Ground,Military,Red,Or2Wo1,Sh2,II,,1,,1,1
+Stables,Military,Red,Or1Cl1Wo1,Sh2,II,1,,1,,
+Archery Range,Military,Red,Wo2Or1,Sh2,II,1,,,1,
+Dispensary,Science,Green,Or2Gl1,Sa1,II,1,1,,,
+Laboratory,Science,Green,Cl2Pa1,Sb1,II,1,,1,,
+Library,Science,Green,St2Lo1,Sc1,II,1,,,1,
+School,Science,Green,Wo1Pa1,Sc1,II,1,,,,1
+Pantheon,Civilian,Blue,Cl2Or1Pa1Lo1Gl1,Vp7,III,1,,,1,
+Gardens,Civilian,Blue,Cl2Wo1,Vp5,III,1,1,,,
+Town Hall,Civilian,Blue,St2Or1Gl1,Vp6,III,1,,1,1,
+Palace,Civilian,Blue,Cl1Wo1Or1St1Gl1Pa1Lo1,Vp8,III,1,,,,1
+Senate,Civilian,Blue,Wo2Or1St1,Vp6,III,1,,1,,
+Haven,Commerce,Yellow,Or1Wo1Lo1,HAV,III,1,1,,,
+Lighthouse,Commerce,Yellow,St1Gl1,LIG,III,1,,,1,
+Chamber Of Commerce,Commerce,Yellow,Cl2Pa1,COC,III,,1,,1,
+Arena,Commerce,Yellow,St2Or1,ARE,III,1,,1,,1
+Fortifications,Military,Red,Or3St1,Sh3,III,1,,,,1
+Circus,Military,Red,St3Or1,Sh3,III,,1,1,1,
+Arsenal,Military,Red,Or1Wo2Lo1,Sh3,III,1,1,,,1
+Siege Workshop,Military,Red,Wo1Cl3,Sh3,III,1,,1,,
+Lodge,Science,Green,Cl2Lo1Pa1,Sa1,III,1,,,1,
+Observatory,Science,Green,Or2Gl1Lo1,Sb1,III,1,,,,1
+University,Science,Green,Wo2Pa1Gl1,Sc1,III,1,1,,,
+Academy,Science,Green,St3Gl1,Sa1,III,1,,,,1
+Study,Science,Green,Wo1Pa1Lo1,Sb1,III,1,,1,,
+Workers Guild,Guild,Purple,Or2Cl1St1Wo1,WOR,III,,,,,
+Craftmens Guild,Guild,Purple,Or2St2,CRA,III,,,,,
+Traders Guild,Guild,Purple,Lo1Pa1Gl1,TRA,III,,,,,
+Philosophers Guild,Guild,Purple,Cl3Lo1Pa1,PHI,III,,,,,
+Spy Guild,Guild,Purple,Cl3Gl1,SPY,III,,,,,
+Strategy Guild,Guild,Purple,Or2St1Lo1,STR,III,,,,,
+Shipowners Guild,Guild,Purple,Wo3Pa1Gl1,SHI,III,,,,,
+Scientists Guild,Guild,Purple,Wo2Or2Pa1,SCI,III,,,,,
+Magistrates Guild,Guild,Purple,Wo3St1Lo1,MAG,III,,,,,
+Builders Guild,Guild,Purple,St2Cl2Gl1,BUI,III,,,,,

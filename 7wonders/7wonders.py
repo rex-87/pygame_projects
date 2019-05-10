@@ -1,10 +1,131 @@
 import os
-import pygame
 import time
 import threading
 import queue
+import sys
+import pandas
+import pprint
+import copy
+import random
        
 ThisFolder = os.path.dirname(os.path.realpath(__file__))
+
+p_T = ("3p", "4p", "5p", "6p", "7p",)
+
+StcCsv = pandas.read_csv(os.path.join(ThisFolder, '7wonders_structures.csv'))
+
+empty_decks_D = {
+    "3p" : [],
+    "4p" : [],
+    "5p" : [],
+    "6p" : [],
+    "7p" : [],
+}
+
+# ---- PARTIAL DECKS AS LIST OF DICTIONARIES
+age1_partial_decks_D = copy.deepcopy(empty_decks_D)
+age2_partial_decks_D = copy.deepcopy(empty_decks_D)
+age3_partial_decks_D = copy.deepcopy(empty_decks_D)
+guilds_deck = []
+
+for row_ in StcCsv.iterrows():
+    
+    row_index = row_[0]
+    row = row_[1]
+
+    stc_D = {}
+    for col in row.keys():
+        stc_D[col] = row[col]
+        
+    if row["age"] == "I":
+        for p_S in p_T:    
+            if row[p_S] == 1:
+                age1_partial_decks_D[p_S].append(stc_D)
+    elif row["age"] == "II":
+        for p_S in p_T:    
+            if row[p_S] == 1:
+                age2_partial_decks_D[p_S].append(stc_D)
+    elif row["age"] == "III":
+        for p_S in p_T:    
+            if row[p_S] == 1:
+                age3_partial_decks_D[p_S].append(stc_D)
+        if row["type"] == "Guild":
+            guilds_deck.append(stc_D)
+
+# ---- AGE I : DECKS AS LIST OF DICTIONARIES
+age1_decks_D = {}
+age1_decks_D["3p"] = copy.deepcopy(age1_partial_decks_D["3p"])
+age1_decks_D["4p"] = age1_decks_D["3p"] + age1_partial_decks_D["4p"]
+age1_decks_D["5p"] = age1_decks_D["4p"] + age1_partial_decks_D["5p"]
+age1_decks_D["6p"] = age1_decks_D["5p"] + age1_partial_decks_D["6p"]
+age1_decks_D["7p"] = age1_decks_D["6p"] + age1_partial_decks_D["7p"]
+
+# ---- AGE II : DECKS AS LIST OF DICTIONARIES
+age2_decks_D = {}
+age2_decks_D["3p"] = copy.deepcopy(age2_partial_decks_D["3p"])
+age2_decks_D["4p"] = age2_decks_D["3p"] + age2_partial_decks_D["4p"]
+age2_decks_D["5p"] = age2_decks_D["4p"] + age2_partial_decks_D["5p"]
+age2_decks_D["6p"] = age2_decks_D["5p"] + age2_partial_decks_D["6p"]
+age2_decks_D["7p"] = age2_decks_D["6p"] + age2_partial_decks_D["7p"]
+
+# ---- AGE III : DECKS AS LIST OF DICTIONARIES
+age3_decks_D = {}
+age3_decks_D["3p"] = copy.deepcopy(age3_partial_decks_D["3p"])
+age3_decks_D["4p"] = age3_decks_D["3p"] + age3_partial_decks_D["4p"]
+age3_decks_D["5p"] = age3_decks_D["4p"] + age3_partial_decks_D["5p"]
+age3_decks_D["6p"] = age3_decks_D["5p"] + age3_partial_decks_D["6p"]
+age3_decks_D["7p"] = age3_decks_D["6p"] + age3_partial_decks_D["7p"]
+
+# --- SHUFFLE GUILDS
+random.shuffle(guilds_deck)
+
+# --- SELECT GUILDS AND ADD THEM TO AGE III DECKS
+g_D = {
+    "3p" : 5,
+    "4p" : 6,
+    "5p" : 7,
+    "6p" : 8,
+    "7p" : 9,
+}
+for p_S in p_T:
+    age3_decks_D[p_S] += guilds_deck[0:g_D[p_S]]
+
+# ---- DECKS AS PANDAS DATAFRAMES
+age1_decks_df_D = {}
+age2_decks_df_D = {}
+age3_decks_df_D = {}
+for p_S in p_T:
+    age1_decks_df_D[p_S] = pandas.DataFrame(age1_decks_D[p_S])
+    age2_decks_df_D[p_S] = pandas.DataFrame(age2_decks_D[p_S])
+    age3_decks_df_D[p_S] = pandas.DataFrame(age3_decks_D[p_S])
+    
+how_many_players = "4p"
+
+age1_deck_df = age1_decks_df_D[how_many_players]
+age2_deck_df = age2_decks_df_D[how_many_players]
+age3_deck_df = age3_decks_df_D[how_many_players]
+
+player_count = len(age1_deck_df)//7
+
+age1_cards_L = list(range(len(age1_deck_df)))
+age2_cards_L = list(range(len(age2_deck_df)))
+age3_cards_L = list(range(len(age3_deck_df)))
+random.shuffle(age1_cards_L)
+random.shuffle(age2_cards_L)
+random.shuffle(age3_cards_L)
+
+player_hands_L = []
+for p in range(player_count):
+    player_hands_L.append([])
+for card_index, card in enumerate(age1_cards_L):
+    player_hands_L[(card_index)%player_count].append(card)
+
+for p in range(player_count):
+    print(player_hands_L[p])
+
+sys.exit()
+
+import pygame
 
 screen_width = 800
 screen_height = 600
