@@ -1,0 +1,15 @@
+name,base_resource,side,stage1_cost,stage1_value,stage2_cost,stage2_value,stage3_cost,stage3_value,stage4_cost,stage4_value
+Rhodos,Or1,A,Wo2,Vp3,Cl3,Sh2,Or4,Vp7,,
+Alexandria,Gl1,A,St2,Vp3,Or2,Cl1/Or1/Wo1/St1,Gl2,Vp7,,
+Ephesos,Pa1,A,St3,Vp4,Wo2,Mo9,Pa2,Vp7,,
+Babylon,Cl1,A,Cl2,Vp3,Wo3,Sa1/Sb1/Sc1,Cl4,Vp7,,
+Olympia,Wo1,A,Wo2,Vp3,St2,FRE,Or2,Vp7,,
+Halikarnassos,Lo1,A,Cl2,Vp3,Or3,DIS,Lo2,Vp7,,
+Gizah,St1,A,St2,Vp3,Wo2,Vp5,St4,Vp7,,
+Rhodos,Or1,B,St3,Sh1Vp3Mo3,Or4,Sh1Vp4Mo4,,,,
+Alexandria,Gl1,B,Cl2,Cl1/Or1/Wo1/St1,Wo2,Gl1/Lo1/Pa1,St3,Vp7,,
+Ephesos,Pa1,B,St2,Vp2Mo4,Wo2,Vp3Mo4,Pa1Lo1Gl1,Vp5Mo4,,
+Babylon,Cl1,B,Lo1Cl1,Vp3,Gl1Wo2,SEV,Pa1Cl3,Sa1/Sb1/Sc1,,
+Olympia,Wo1,B,Wo2,BTP,St2,Vp5,Lo1Or2,COP,,
+Halikarnassos,Lo1,B,Or2,Vp2DIS,Cl2,Vp1DIS,Gl1Pa1Lo1,DIS,,
+Gizah,St1,B,Wo2,Vp3,St3,Vp5,Cl3,Vp5,Pa1St4,Vp7

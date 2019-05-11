@@ -15,11 +15,11 @@ Press,Manufactured Good,Grey,,Pa1,I,1,,,1,
 Pawnshop,Civilian,Blue,,Vp3,I,,1,,,1
 Baths,Civilian,Blue,St1,Vp3,I,1,,,,1
 Altar,Civilian,Blue,,Vp2,I,1,,1,,
-Theater,,Blue,,Vp2,I,1,,,1,
+Theater,Civilian,Blue,,Vp2,I,1,,,1,
 Tavern,Commerce,Yellow,,Mo5,I,,1,1,,1
-East Trading Post,Commerce,Yellow,,Etp,I,1,,,,1
-West Trading Post,Commerce,Yellow,,Wtp,I,1,,,,1
-Marketplace,Commerce,Yellow,,Mrk,I,1,,,1,
+East Trading Post,Commerce,Yellow,,ETP,I,1,,,,1
+West Trading Post,Commerce,Yellow,,WTP,I,1,,,,1
+Marketplace,Commerce,Yellow,,MRK,I,1,,,1,
 Stockade,Military,Red,Wo1,Sh1,I,1,,,,1
 Barracks,Military,Red,Or1,Sh1,I,1,,1,,
 Guard Tower,Military,Red,Cl1,Sh1,I,1,1,,,

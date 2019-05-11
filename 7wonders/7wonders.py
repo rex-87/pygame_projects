@@ -12,7 +12,8 @@ ThisFolder = os.path.dirname(os.path.realpath(__file__))
 
 p_T = ("3p", "4p", "5p", "6p", "7p",)
 
-StcCsv = pandas.read_csv(os.path.join(ThisFolder, '7wonders_structures.csv'))
+stc_df = pandas.read_csv(os.path.join(ThisFolder, 'structures.csv'))
+wdr_df = pandas.read_csv(os.path.join(ThisFolder, 'wonders.csv'))
 
 empty_decks_D = {
     "3p" : [],
@@ -28,7 +29,7 @@ age2_partial_decks_D = copy.deepcopy(empty_decks_D)
 age3_partial_decks_D = copy.deepcopy(empty_decks_D)
 guilds_deck = []
 
-for row_ in StcCsv.iterrows():
+for row_ in stc_df.iterrows():
     
     row_index = row_[0]
     row = row_[1]
@@ -51,6 +52,7 @@ for row_ in StcCsv.iterrows():
                 age3_partial_decks_D[p_S].append(stc_D)
         if row["type"] == "Guild":
             guilds_deck.append(stc_D)
+            
 
 # ---- AGE I : DECKS AS LIST OF DICTIONARIES
 age1_decks_D = {}
@@ -98,15 +100,27 @@ for p_S in p_T:
     age1_decks_df_D[p_S] = pandas.DataFrame(age1_decks_D[p_S])
     age2_decks_df_D[p_S] = pandas.DataFrame(age2_decks_D[p_S])
     age3_decks_df_D[p_S] = pandas.DataFrame(age3_decks_D[p_S])
-    
+
+# ---- HOW MANY PLAYERS
 how_many_players = "4p"
 
+# ---- CHOOSE RIGHT DECKS
 age1_deck_df = age1_decks_df_D[how_many_players]
 age2_deck_df = age2_decks_df_D[how_many_players]
 age3_deck_df = age3_decks_df_D[how_many_players]
 
 player_count = len(age1_deck_df)//7
 
+# ---- WONDERS
+class Wonder(object):
+    def __init__(self):
+        self.info_df = None
+        self.
+wonders_L = list(range(7))
+random.shuffle(wonders_L)
+player_wonders_L = wonders_L[:player_count]
+
+# ---- LIST OF CARD INDEXES
 age1_cards_L = list(range(len(age1_deck_df)))
 age2_cards_L = list(range(len(age2_deck_df)))
 age3_cards_L = list(range(len(age3_deck_df)))
@@ -114,6 +128,7 @@ random.shuffle(age1_cards_L)
 random.shuffle(age2_cards_L)
 random.shuffle(age3_cards_L)
 
+# ---- DISTRIBUTE CARDS
 player_hands_L = []
 for p in range(player_count):
     player_hands_L.append([])
