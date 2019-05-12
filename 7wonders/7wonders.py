@@ -10,6 +10,31 @@ import random
        
 ThisFolder = os.path.dirname(os.path.realpath(__file__))
 
+class Wonder(object):
+    def __init__(self, info_df):
+        self.info_df = info_df
+        self.cards_L = []
+        # -- wonder stages
+        stage_count = 2
+        if not pandas.isna(info_df['stage3_cost']):
+            stage_count = 3
+        if not pandas.isna(info_df['stage4_cost']):
+            stage_count = 4
+        self.stage_count = stage_count
+        self.stages_L = []
+
+class Player(object):
+    def __init__(self, wonder, cards_L):
+        self.wonder = wonder
+        self.cards_L = cards_L
+        self.money = 3
+    def build_structure(self, card):
+        self.cards_L.remove(card)
+        self.wonder.cards_L.append(card)
+    def build_wonder(self, card):
+        self.cards_L.remove(card)
+        self.wonder.stages_L.append(card)
+
 p_T = ("3p", "4p", "5p", "6p", "7p",)
 
 stc_df = pandas.read_csv(os.path.join(ThisFolder, 'structures.csv'))
@@ -51,8 +76,7 @@ for row_ in stc_df.iterrows():
             if row[p_S] == 1:
                 age3_partial_decks_D[p_S].append(stc_D)
         if row["type"] == "Guild":
-            guilds_deck.append(stc_D)
-            
+            guilds_deck.append(stc_D) 
 
 # ---- AGE I : DECKS AS LIST OF DICTIONARIES
 age1_decks_D = {}
@@ -112,13 +136,11 @@ age3_deck_df = age3_decks_df_D[how_many_players]
 player_count = len(age1_deck_df)//7
 
 # ---- WONDERS
-class Wonder(object):
-    def __init__(self):
-        self.info_df = None
-        self.
-wonders_L = list(range(7))
-random.shuffle(wonders_L)
-player_wonders_L = wonders_L[:player_count]
+wonder_indexes_L = list(range(7))
+random.shuffle(wonder_indexes_L)
+player_wonders_L = []
+for wonder_index in wonder_indexes_L[:player_count]:
+    player_wonders_L.append(Wonder(wdr_df.iloc[wonder_index]))
 
 # ---- LIST OF CARD INDEXES
 age1_cards_L = list(range(len(age1_deck_df)))
@@ -135,9 +157,22 @@ for p in range(player_count):
 for card_index, card in enumerate(age1_cards_L):
     player_hands_L[(card_index)%player_count].append(card)
 
+# ---- PLAYERS
+players_L = []
 for p in range(player_count):
-    print(player_hands_L[p])
-
+    players_L.append(
+        Player(
+            wonder = Wonder(wdr_df.iloc[wonder_indexes_L[:player_count][p]]),
+            cards_L = player_hands_L[p],
+        )
+    )
+    
+print(players_L[0].cards_L)
+print(players_L[0].wonder.stages_L)
+players_L[0].build_wonder(players_L[0].cards_L[0])
+print(players_L[0].cards_L)
+print(players_L[0].wonder.stages_L)
+    
 sys.exit()
 
 import pygame
