@@ -19,8 +19,9 @@ screen = pygame.display.set_mode((screen_width, screen_height))
 background = pygame.Surface(screen.get_size())
 background = background.convert()
 
-img1 = pygame.image.load(r'images\Lumber_Yard.png')
-img1 = pygame.transform.scale(img1, (img1.get_rect().width//2, img1.get_rect().height//2))
+img1 = pygame.image.load(r'images\strategy_guild.jpg')
+scale = 0.2
+img1 = pygame.transform.smoothscale(img1, (int(round(img1.get_rect().width*scale)), int(round(img1.get_rect().height*scale))))
 img1 = img1.convert()
 
 clock = pygame.time.Clock()
