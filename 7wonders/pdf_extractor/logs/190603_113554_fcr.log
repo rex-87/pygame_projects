@@ -1,9 +1,0 @@
-2019-06-03 11:35:54,104 |             fcr.Misc |           MainThread |      DEBUG | Created logger
-2019-06-03 11:35:54,104 |     fcr.poppler_test |           MainThread |      DEBUG | Created logger
-2019-06-03 11:35:54,108 |     fcr.poppler_test |           MainThread |      ERROR | Something went wrong! Exception details:
-Traceback (most recent call last):
-  File "C:\pdf_extractor\pdf_extractor\pdf_extractor.py", line 16, in <module>
-    if not os.exists('proc'):
-AttributeError: module 'os' has no attribute 'exists'
-
-2019-06-03 11:35:54,108 |     fcr.poppler_test |           MainThread |      DEBUG | END of __main__

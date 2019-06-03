@@ -1,7 +1,0 @@
-2019-06-03 12:14:59,736 |        fcr.MyLogging |           MainThread |      DEBUG | Created logger
-2019-06-03 12:14:59,736 |     fcr.poppler_test |           MainThread |      DEBUG | Created logger
-2019-06-03 12:14:59,772 |     fcr.poppler_test |           MainThread |      DEBUG | I    = C:\pdf_extractor\pdf_extractor\pdf_extractor.py:37
-2019-06-03 12:14:59,772 |     fcr.poppler_test |           MainThread |      DEBUG |  F   = <function check_output at 0x000001E020BF5730>
-2019-06-03 12:14:59,773 |     fcr.poppler_test |           MainThread |      DEBUG |   P  = (['poppler-0.68.0\\bin\\pdftohtml.exe', '-xml', 'raw\\7Wonders-CardsList-EN.pdf', 'proc\\7wonders_card.xml'],) {}
-2019-06-03 12:16:35,679 |     fcr.poppler_test |           MainThread |      DEBUG |    R = b'Page-1\r\nPage-2\r\nPage-3\r\n'
-2019-06-03 12:16:35,682 |     fcr.poppler_test |           MainThread |      DEBUG | END of __main__

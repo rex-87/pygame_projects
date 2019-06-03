@@ -1,7 +1,0 @@
-2019-06-03 13:09:20,342 |        fcr.MyLogging |           MainThread |      DEBUG | Created logger
-2019-06-03 13:09:20,342 |     fcr.poppler_test |           MainThread |      DEBUG | Created logger
-2019-06-03 13:09:20,375 |     fcr.poppler_test |           MainThread |      DEBUG | I    = C:\pdf_extractor\pdf_extractor\pdf_extractor.py:54
-2019-06-03 13:09:20,376 |     fcr.poppler_test |           MainThread |      DEBUG |  F   = <function check_output at 0x0000026B29696730>
-2019-06-03 13:09:20,377 |     fcr.poppler_test |           MainThread |      DEBUG |   P  = (['poppler-0.68.0\\bin\\pdftocairo.exe', '-png', '-f', '1', '-l', '1', '-x', '406', '-y', '484', '-W', '196', '-H', '83', 'raw\\7Wonders-CardsList-EN.pdf'],) {}
-2019-06-03 13:09:21,470 |     fcr.poppler_test |           MainThread |      DEBUG |    R = b''
-2019-06-03 13:09:21,470 |     fcr.poppler_test |           MainThread |      DEBUG | END of __main__
