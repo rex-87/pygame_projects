@@ -1,0 +1,7 @@
+2019-06-03 11:52:17,757 |        fcr.MyLogging |           MainThread |      DEBUG | Created logger
+2019-06-03 11:52:17,757 |     fcr.poppler_test |           MainThread |      DEBUG | Created logger
+2019-06-03 11:52:17,787 |     fcr.poppler_test |           MainThread |      DEBUG | I    = C:\pdf_extractor\pdf_extractor\pdf_extractor.py:30
+2019-06-03 11:52:17,787 |     fcr.poppler_test |           MainThread |      DEBUG |  F   = <function check_output at 0x00000187D9F35730>
+2019-06-03 11:52:17,788 |     fcr.poppler_test |           MainThread |      DEBUG |   P  = (['poppler-0.68.0\\bin\\pdfimages.exe', '-png', 'raw\\7Wonders-CardsList-EN.pdf', 'proc\\image-root'],) {}
+2019-06-03 11:54:00,760 |     fcr.poppler_test |           MainThread |      DEBUG |    R = b''
+2019-06-03 11:54:00,760 |     fcr.poppler_test |           MainThread |      DEBUG | END of __main__

@@ -1,0 +1,11 @@
+2019-06-03 11:46:13,687 |        fcr.MyLogging |           MainThread |      DEBUG | Created logger
+2019-06-03 11:46:13,687 |     fcr.poppler_test |           MainThread |      DEBUG | Created logger
+2019-06-03 11:46:13,727 |     fcr.poppler_test |           MainThread |      ERROR | Something went wrong! Exception details:
+Traceback (most recent call last):
+  File "C:\pdf_extractor\pdf_extractor\pdf_extractor.py", line 29, in <module>
+    subprocess.check_output([r"poppler-0.68.0\bin\pdftotext.exe", "-bbox", PdfSrcPath, HtmlDstPath])
+  File "C:\pdf_extractor\pdf_extractor\MyLogging.py", line 77, in wrapper
+    func_call_info = traceback.extract_stack()[-2]
+NameError: name 'traceback' is not defined
+
+2019-06-03 11:46:13,729 |     fcr.poppler_test |           MainThread |      DEBUG | END of __main__

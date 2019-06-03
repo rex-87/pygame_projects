@@ -1,0 +1,1 @@
+%~dp0\Python37\Scripts\activate && pip install -r %~dp0\requirements.txt
