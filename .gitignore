@@ -1,2 +1,4 @@
 Python37/
 *.pyc
+7wonders/pdf_extractor/logs/
+7wonders/proc/
