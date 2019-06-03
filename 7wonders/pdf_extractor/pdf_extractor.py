@@ -29,7 +29,7 @@ try:
 	# extract words with associated bounding box from pdf
 	subprocess.check_output = handle_retval_and_log(subprocess.check_output) # logging decorator
 	# subprocess.check_output([r"poppler-0.68.0\bin\pdftotext.exe", "-bbox", PdfSrcPath, HtmlDstPath])
-	# subprocess.check_output([r"poppler-0.68.0\bin\pdfimages.exe", "-png", PdfSrcPath, r'proc\image-root'])
+	subprocess.check_output([r"poppler-0.68.0\bin\pdfimages.exe", "-png", PdfSrcPath, r'proc\image-root'])
 	# with open(r'proc\pdfimages_list.txt', 'w') as fout:
 		# fout.write(
 			# subprocess.check_output(
@@ -45,28 +45,28 @@ try:
 	# y_ar = np.linspace(484, 1305, 10)
 	
 	# 900 dpi
-	x_ar = np.linspace(1035, 5234, 4)
-	y_ar = np.linspace(2904, 7831, 10)
-	for x in x_ar:
-		for y in y_ar:
-			x_str = str(int(round(x)))
-			y_str = str(int(round(y)))
-			subprocess.check_output([
-				r'poppler-0.68.0\bin\pdftocairo.exe',
-				'-jpeg',
-				'-r',
-				'900',
-				'-x',
-				x_str,
-				'-y',
-				y_str,
-				'-W',
-				'1171',
-				'-H',
-				'498',
-				r'raw\7Wonders-CardsList-EN.pdf',
-				r'proc\7wonders-card-{}-{}'.format(x_str, y_str),
-			])
+	# x_ar = np.linspace(1035, 5234, 4)
+	# y_ar = np.linspace(2904, 7831, 10)
+	# for x in x_ar:
+		# for y in y_ar:
+			# x_str = str(int(round(x)))
+			# y_str = str(int(round(y)))
+			# subprocess.check_output([
+				# r'poppler-0.68.0\bin\pdftocairo.exe',
+				# '-jpeg',
+				# '-r',
+				# '900',
+				# '-x',
+				# x_str,
+				# '-y',
+				# y_str,
+				# '-W',
+				# '1171',
+				# '-H',
+				# '498',
+				# r'raw\7Wonders-CardsList-EN.pdf',
+				# r'proc\7wonders-card-{}-{}'.format(x_str, y_str),
+			# ])
 
 except:
 
