@@ -3,12 +3,83 @@ import time
 import threading
 import queue
 import sys
-import pandas
+import pandas as pd
 import pprint
 import copy
 import random
        
 ThisFolder = os.path.dirname(os.path.realpath(__file__))
+
+def chunks(l, n):
+    """Yield successive n-sized chunks from l."""
+    for i in range(0, len(l), n):
+        yield l[i:i + n]
+
+def get_cost_D(cost_S):
+
+    if pd.isna(cost_S):
+        return None
+
+    cost_chunks_L = chunks(cost_S, 3)
+
+    Mo_I = 0
+    Wo_I = 0
+    St_I = 0
+    Cl_I = 0
+    Lo_I = 0
+    Gl_I = 0
+    Pa_I = 0
+    for chunk in cost_chunks_L:
+        if   "Mo" in chunk: Mo_I += int(chunk[-1])
+        elif "Wo" in chunk: Wo_I += int(chunk[-1])
+        elif "St" in chunk: St_I += int(chunk[-1])
+        elif "Cl" in chunk: Cl_I += int(chunk[-1])
+        elif "Lo" in chunk: Lo_I += int(chunk[-1])
+        elif "Gl" in chunk: Gl_I += int(chunk[-1])
+        elif "Pa" in chunk: Pa_I += int(chunk[-1])
+
+    return {
+        "Mo" : Mo_I,
+        "Wo" : Wo_I,
+        "St" : St_I,
+        "Cl" : Cl_I,
+        "Lo" : Lo_I,
+        "Gl" : Gl_I,
+        "Pa" : Pa_I,
+    }
+
+def get_value_D(value_S):
+
+    if pd.isna(value_S):
+        return None
+
+    value_chunks_L = chunks(value_S)
+
+    Mo_I = 0
+    Wo_I = 0
+    St_I = 0
+    Cl_I = 0
+    Lo_I = 0
+    Gl_I = 0
+    Pa_I = 0
+    for chunk in value_chunks_L:
+        if   "Mo" in chunk: Mo_I += int(chunk[-1])
+        elif "Wo" in chunk: Wo_I += int(chunk[-1])
+        elif "St" in chunk: St_I += int(chunk[-1])
+        elif "Cl" in chunk: Cl_I += int(chunk[-1])
+        elif "Lo" in chunk: Lo_I += int(chunk[-1])
+        elif "Gl" in chunk: Gl_I += int(chunk[-1])
+        elif "Pa" in chunk: Pa_I += int(chunk[-1])
+
+    return {
+        "Mo" : Mo_I,
+        "Wo" : Wo_I,
+        "St" : St_I,
+        "Cl" : Cl_I,
+        "Lo" : Lo_I,
+        "Gl" : Gl_I,
+        "Pa" : Pa_I,
+    }
 
 class Wonder(object):
     def __init__(self, info_df):
@@ -16,9 +87,9 @@ class Wonder(object):
         self.cards_L = []
         # -- wonder stages
         stage_count = 2
-        if not pandas.isna(info_df['stage3_cost']):
+        if not pd.isna(info_df['stage3_cost']):
             stage_count = 3
-        if not pandas.isna(info_df['stage4_cost']):
+        if not pd.isna(info_df['stage4_cost']):
             stage_count = 4
         self.stage_count = stage_count
         self.stages_L = []
@@ -28,6 +99,12 @@ class Player(object):
         self.wonder = wonder
         self.cards_L = cards_L
         self.money = 3
+    def assess_hand(self, age_deck_df):
+        for card in self.cards_L:
+            card_df = age_deck_df.iloc[card]
+            print(card_df)
+            print(get_cost_D(card_df['cost']))
+            print(get_value_D(card_df['value']))
     def build_structure(self, card):
         self.cards_L.remove(card)
         self.wonder.cards_L.append(card)
@@ -37,8 +114,8 @@ class Player(object):
 
 p_T = ("3p", "4p", "5p", "6p", "7p",)
 
-stc_df = pandas.read_csv(os.path.join(ThisFolder, 'structures.csv'))
-wdr_df = pandas.read_csv(os.path.join(ThisFolder, 'wonders.csv'))
+stc_df = pd.read_csv(os.path.join(ThisFolder, 'structures.csv'))
+wdr_df = pd.read_csv(os.path.join(ThisFolder, 'wonders.csv'))
 
 empty_decks_D = {
     "3p" : [],
@@ -121,9 +198,9 @@ age1_decks_df_D = {}
 age2_decks_df_D = {}
 age3_decks_df_D = {}
 for p_S in p_T:
-    age1_decks_df_D[p_S] = pandas.DataFrame(age1_decks_D[p_S])
-    age2_decks_df_D[p_S] = pandas.DataFrame(age2_decks_D[p_S])
-    age3_decks_df_D[p_S] = pandas.DataFrame(age3_decks_D[p_S])
+    age1_decks_df_D[p_S] = pd.DataFrame(age1_decks_D[p_S])
+    age2_decks_df_D[p_S] = pd.DataFrame(age2_decks_D[p_S])
+    age3_decks_df_D[p_S] = pd.DataFrame(age3_decks_D[p_S])
 
 # ---- HOW MANY PLAYERS
 how_many_players = "4p"
@@ -166,12 +243,8 @@ for p in range(player_count):
             cards_L = player_hands_L[p],
         )
     )
-    
-print(players_L[0].cards_L)
-print(players_L[0].wonder.stages_L)
-players_L[0].build_wonder(players_L[0].cards_L[0])
-print(players_L[0].cards_L)
-print(players_L[0].wonder.stages_L)
+
+players_L[0].assess_hand(age1_deck_df)
     
 sys.exit()
 
